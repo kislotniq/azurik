@@ -9,7 +9,9 @@ class AzureCredentials(object):
         self.tenant = tenant
         self.subscription_id = subscription_id
 
-    def make_from_environment(client_id_env="AZURE_CLIENT_ID",
+    @classmethod
+    def make_from_environment(cls,
+                              client_id_env="AZURE_CLIENT_ID",
                               client_secret_env="AZURE_CLIENT_SECRET",
                               tenant_id_env="AZURE_TENANT_ID",
                               subscription_id_env="AZURE_SUBSCRIPTION_ID"):
@@ -17,10 +19,10 @@ class AzureCredentials(object):
 
         Default are AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID
         """
-        return AzureCredentials(os.environ[client_id_env],
-                                os.environ[client_secret_env],
-                                os.environ[tenant_id_env],
-                                os.environ[subscription_id_env])
+        return cls(os.environ[client_id_env],
+                   os.environ[client_secret_env],
+                   os.environ[tenant_id_env],
+                   os.environ[subscription_id_env])
 
     def get_service_principal(self):
         return ServicePrincipalCredentials(
