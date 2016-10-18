@@ -1,8 +1,9 @@
 def create_resource_group(resource_client, name, location):
-    resource_client.resource_groups.create_or_update(name,
-                                                     {
-                                                         'location' : location
-                                                     })
+    result = resource_client.resource_groups.create_or_update(name,
+                                                              {
+                                                                  'location' : location
+                                                              })
+    return result.wait()
 
 def create_vm_parameters(location,
                          vm_name,
