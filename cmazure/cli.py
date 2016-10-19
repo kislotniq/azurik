@@ -198,10 +198,6 @@ def main():
         "--ipconfig-name",
         help="IP Config name. Default nicnameipconfig"
     )
-    create_nic_parser.add_argument(
-        "--flavor",
-        help="Director's flavor"
-    )
 
     def create_nic(args):
         common.create_nic(
