@@ -51,6 +51,8 @@ def do_magic(args):
         subnet_name = input_prefix("Subnet name", "subnet")
         vnet_name = input_prefix("VNet name", "vnet")
         sa_name = input_prefix("Storage account name", "sa")
+        vm1_name = input_prefix("VM1 name", "vm1")
+        vm2_name = input_prefix("VM2 name", "vm2")
         logging.info("Creating VNet %s and subnet %s...", vnet_name, subnet_name)
         common.create_network(network_client,
                               rg_name,
@@ -63,6 +65,7 @@ def do_magic(args):
             rg_name,
             sa_name,
             location)
+        logging.info("Creating vm1 %s...", vm1_name)
         completed = True
     finally:
         if not completed:
