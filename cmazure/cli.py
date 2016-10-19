@@ -59,6 +59,16 @@ def main():
         )
     create_resource_group_parser.set_defaults(func=create_resource_group)
 
+    remove_resource_group_parser = subparsers.add_parser("remove-rg", help="Remove resource group")
+
+    def remove_resource_group(args):
+        return common.remove_resource_group(
+            make_resource_client(args),
+            args.rg_name,
+            args.region,
+        )
+    remove_resource_group_parser.set_defaults(func=remove_resource_group)
+
     create_director_parser = subparsers.add_parser("create-director", help="Create Cloud Director")
     create_director_parser.add_argument(
         "vm-name",

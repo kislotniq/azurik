@@ -139,6 +139,10 @@ def create_vm(compute_client,
     vm_tag.wait()
 
 
+def remove_resource_group(resource_client, resource_group_name, region):
+    resource_client.resource_groups.delete(resource_group_name).wait()
+
+
 def make_resource_client(credentials):
     return ResourceManagementClient(
         credentials.get_service_principal(),
