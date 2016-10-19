@@ -169,7 +169,7 @@ def main():
                     args.vnet,
                     args.subnet,
                     "hardcoded-nic-name"
-                )
+                ).id
             )
         )
     create_vm_parser.set_defaults(func=create_compute_node)
