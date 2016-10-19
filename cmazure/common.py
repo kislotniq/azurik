@@ -198,3 +198,43 @@ def create_nic(network_client,
         }
     )
     return async_nic_creation.result()
+
+def create_compute_node(resource_client,
+                        compute_client,
+                        network_client,
+                        storage_client,
+                        rg_name,
+                        location,
+                        storage_acc_name,
+                        vm_name,
+                        disk_name,
+                        vnet,
+                        subnet):
+
+    create_vm(
+        compute_client,
+        rg_name,
+        vm_name,
+        {
+            'who-rocks': 'python',
+            'where': 'on azure'
+        },
+        location,
+        create_vm_parameters(
+            location,
+            vm_name,
+            "matilda",
+            "l8Uccc",
+            storage_acc_name,
+            disk_name,
+            create_nic(
+                network_client,
+                rg_name,
+                location,
+                vnet,
+                subnet,
+                vm_name + 'nic',
+                vm_name + 'ipconfig'
+            ).id
+        )
+    )

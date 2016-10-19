@@ -162,40 +162,22 @@ def main():
 
     def create_compute_node(args):
         resource_client = make_resource_client(args)
-        common.create_resource_group(resource_client, args.rg_name, args.location)
-        storage_acc = storageaccount.use_account(
-            storagecommon.make_storage_client(make_credentials(args)),
-            args.rg_name,
-            args.storage_acc,
-            args.location)
+        compute_client = make_compute_client(args)
+        network_client = make_network_client(args)
+        storage_client = storagecommon.make_storage_client(make_credentials(args))
 
-        common.create_vm(
-            make_compute_client(args),
-            args.rg_name,
-            args.vm_name,
-            {
-                'who-rocks': 'python',
-                'where': 'on azure'
-            },
-            args.location,
-            common.create_vm_parameters(
-                args.location,
-                args.vm_name,
-                "matilda",
-                "l8Uccc",
-                storage_acc.name,
-                args.disk_name,
-                common.create_nic(
-                    make_network_client(args),
-                    args.rg_name,
-                    args.location,
-                    args.vnet,
-                    args.subnet,
-                    args.vm_name + "nic",
-                    args.vm_name + "ipconfig"
-                ).id
-            )
-        )
+        common.create_compute_node(resource_client,
+                                   compute_client,
+                                   network_client,
+                                   storage_client,
+                                   args.rg_name,
+                                   args.location,
+                                   args.storage_acc,
+                                   args.vm_name,
+                                   args.disk_name,
+                                   args.vnet,
+                                   args.subnet)
+
     create_vm_parser.set_defaults(func=create_compute_node)
 
     create_volume_parser = subparsers.add_parser("create-volume", help="Create volume")
