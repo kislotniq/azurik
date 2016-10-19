@@ -50,12 +50,19 @@ def do_magic(args):
     try:
         subnet_name = input_prefix("Subnet name", "subnet")
         vnet_name = input_prefix("VNet name", "vnet")
+        sa_name = input_prefix("Storage account name", "sa")
         logging.info("Creating VNet %s and subnet %s...", vnet_name, subnet_name)
         common.create_network(network_client,
                               rg_name,
                               location,
                               vnet_name,
                               subnet_name)
+        logging.info("Creating storage account  %s...", sa_name)
+        storageaccount.create_account(
+            storagecommon.make_storage_client(make_credentials(args)),
+            rg_name,
+            sa_name,
+            location)
         completed = True
     finally:
         if not completed:
