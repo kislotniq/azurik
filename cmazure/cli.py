@@ -146,6 +146,12 @@ def main():
         return common.make_compute_client(make_credentials(args))
 
     def create_compute_node(args):
+        storage_acc = storageaccount.use_account(
+            storagecommon.make_storage_client(make_credentials(args)),
+            args.rg_name,
+            args.name,
+            args.location)
+
         common.create_vm(
             make_compute_client(args),
             args.rg_name,
@@ -160,7 +166,7 @@ def main():
                 args.vm_name,
                 "matilda",
                 "l8Uccc",
-                args.storage_acc,
+                storage_acc.name,
                 args.disk_name,
                 common.create_nic(
                     make_network_client(args),
