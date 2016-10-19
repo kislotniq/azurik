@@ -84,10 +84,6 @@ def main():
         help="Node location"
     )
     create_vm_parser.add_argument(
-        "resource_group",
-        help="Target resource group"
-    )
-    create_vm_parser.add_argument(
         "vm_name",
         help="Node name"
     )
