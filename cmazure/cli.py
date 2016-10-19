@@ -65,7 +65,6 @@ def main():
         return common.remove_resource_group(
             make_resource_client(args),
             args.rg_name,
-            args.region,
         )
     remove_resource_group_parser.set_defaults(func=remove_resource_group)
 
