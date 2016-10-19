@@ -39,9 +39,9 @@ def create_vm_parameters(location,
                          vm_name,
                          admin_username,
                          admin_password,
+                         storage_account_name,
                          os_disk_name,
-                         nic_id,
-                         storage_account_name):
+                         nic_id):
     vm_reference = VM_REFERENCE['linux']
     """Create the VM parameters structure.
     """
@@ -157,12 +157,57 @@ def make_network_client(credentials):
     )
 
 
-def regions(resource_client):
+def locations(resource_client):
     try:
         create_resource_group(resource_client, "wefewf", "wefewf")
     except CloudError as excp:
         message = str(excp)
         return (
             {"key": key} for key in
-            re.search("List of available regions is '([^']+)'", message).group(1).split(",")
+            re.search("List of available locations is '([^']+)'", message).group(1).split(",")
         )
+
+def create_nic(network_client,
+               rg_name,
+               location,
+               vnet_name,
+               subnet_name,
+               nic_name):
+    """Create a Network Interface for a VM.
+    """
+    async_vnet_creation = network_client.virtual_networks.create_or_update(
+        rg_name,
+        vnet_name,
+        {
+            'location': location,
+            'address_space': {
+                'address_prefixes': ['10.0.0.0/16']
+            }
+        }
+    )
+    async_vnet_creation.wait()
+
+    # Create Subnet
+    async_subnet_creation = network_client.subnets.create_or_update(
+        rg_name,
+        vnet_name,
+        subnet_name,
+        {'address_prefix': '10.0.0.0/24'}
+    )
+    subnet_info = async_subnet_creation.result()
+
+    # Create NIC
+    async_nic_creation = network_client.network_interfaces.create_or_update(
+        rg_name,
+        nic_name,
+        {
+            'location': location,
+            'ip_configurations': [{
+                'name': 'private-ip-config',
+                'subnet': {
+                    'id': subnet_info.id
+                }
+            }]
+        }
+    )
+    return async_nic_creation.result()

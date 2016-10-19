@@ -24,8 +24,8 @@ def main():
                         default=os.environ.get("AZURE_SUBSCRIPTION_ID"))
     parser.add_argument("-g", "--rg-name",
                         help="Resource group name")
-    parser.add_argument("-r", "--region",
-                        help="Target region",
+    parser.add_argument("-l", "--location",
+                        help="Target location",
                         default="westus")
 
     def make_credentials(args):
@@ -42,12 +42,12 @@ def main():
     def make_network_client(args):
         return common.make_network_client(make_credentials(args))
 
-    list_regions_parser = subparsers.add_parser("list-regions", help="List azure regions")
+    list_locations_parser = subparsers.add_parser("list-locations", help="List azure locations")
 
-    def list_regions(args):
-        for region in common.regions(make_resource_client(args)):
-            print("{key}".format(**region))
-    list_regions_parser.set_defaults(func=list_regions)
+    def list_locations(args):
+        for location in common.locations(make_resource_client(args)):
+            print("{key}".format(**location))
+    list_locations_parser.set_defaults(func=list_locations)
 
     create_resource_group_parser = subparsers.add_parser("create-rg", help="Create resource group")
 
@@ -55,7 +55,7 @@ def main():
         return common.create_resource_group(
             make_resource_client(args),
             args.rg_name,
-            args.region,
+            args.location,
         )
     create_resource_group_parser.set_defaults(func=create_resource_group)
 
@@ -88,24 +88,24 @@ def main():
 
     create_vm_parser = subparsers.add_parser("create-vm", help="Create VM")
     create_vm_parser.add_argument(
-        "location",
-        help="Node location"
-    )
-    create_vm_parser.add_argument(
         "vm_name",
         help="Node name"
+    )
+    create_vm_parser.add_argument(
+        "storage_acc",
+        help="Storage account name"
     )
     create_vm_parser.add_argument(
         "disk_name",
         help="Disk name"
     )
     create_vm_parser.add_argument(
-        "nic_id",
-        help="NIC id"
+        "vnet",
+        help="vnet name"
     )
     create_vm_parser.add_argument(
-        "storage_acc",
-        help="Storage account name"
+        "subnet",
+        help="subnet name"
     )
 
 
@@ -122,13 +122,22 @@ def main():
                 'where': 'on azure'
             },
             args.location,
-            common.create_vm_parameters(args.location,
-                                        args.vm_name,
-                                        "matilda",
-                                        "l8Uccc",
-                                        args.disk_name,
-                                        args.nic_id,
-                                        args.storage_acc)
+            common.create_vm_parameters(
+                args.location,
+                args.vm_name,
+                "matilda",
+                "l8Uccc",
+                args.disk_name,
+                args.storage_acc,
+                common.create_nic(
+                    make_network_client(args),
+                    args.rg_name,
+                    args.location,
+                    args.vnet,
+                    args.subnet,
+                    "hardcoded-nic-name"
+                )
+            )
         )
     create_vm_parser.set_defaults(func=create_compute_node)
 
@@ -146,7 +155,7 @@ def main():
         return storageaccount.create_account(storagecommon.make_storage_client(make_credentials(args)),
                                              args.rg_name,
                                              args.name,
-                                             args.region)
+                                             args.location)
 
     create_storage_account_parser.set_defaults(func=create_storage_account)
 
@@ -185,7 +194,7 @@ def main():
     def create_net(args):
         common.create_network(
             network_client=make_network_client(args),
-            location=args.region,
+            location=args.location,
             resource_group_name=args.rg_name,
             vnet_name=args.vnet_name or args.prefix + "vnet",
             subnet_name=args.subnet_name or args.prefix + "subnet",
@@ -219,3 +228,8 @@ def main():
 
     args = parser.parse_args()
     args.func(args)
+
+    # try:
+    #     args.func(args)
+    # except AttributeError:
+    #     parser.print_help()
