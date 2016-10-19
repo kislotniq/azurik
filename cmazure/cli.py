@@ -83,27 +83,56 @@ def main():
         )
     create_director_parser.set_defaults(func=create_director)
 
-    create_compute_node_parser = subparsers.add_parser("launch-inst", help="Launch instance")
-    create_compute_node_parser.add_argument(
+    create_vm_parser = subparsers.add_parser("create-vm", help="Create VM")
+    create_vm_parser.add_argument(
+        "location",
+        help="Node location"
+    )
+    create_vm_parser.add_argument(
         "resource-group",
         help="Target resource group"
     )
-    create_compute_node_parser.add_argument(
+    create_vm_parser.add_argument(
         "vm-name",
         help="Node name"
     )
-    create_compute_node_parser.add_argument(
-        "--flavor",
-        help="Director's flavor"
+    create_vm_parser.add_argument(
+        "disk-name",
+        help="Disk name"
+    )
+    create_vm_parser.add_argument(
+        "nic-id",
+        help="NIC id"
+    )
+    create_vm_parser.add_argument(
+        "storage-acc",
+        help="Storage account name"
     )
 
+
+    def make_compute_client(args):
+        return common.make_compute_client(make_credentials(args))
+
     def create_compute_node(args):
-        common.create_compute_node(
-            make_resource_client(args),
+        common.create_vm(
+            make_compute_client(args),
             args.resource_group,
-            args.vm_name
+            args.vm_name,
+            {
+                'who-rocks': 'python',
+                'where': 'on azure'
+            },
+            args.location,
+            common.create_vm_parameters(args.location,
+                                        args.vm_name,
+                                        "root",
+                                        "root",
+                                        args.os_disk_name,
+                                        args.nic_id,
+                                        'linux',
+                                        args.storage_acc)
         )
-    create_compute_node_parser.set_defaults(func=create_compute_node)
+    create_vm_parser.set_defaults(func=create_compute_node)
 
     create_volume_parser = subparsers.add_parser("create-volume", help="Create volume")
     create_volume_parser.add_argument(

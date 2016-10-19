@@ -3,6 +3,30 @@ import re
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from msrestazure.azure_exceptions import CloudError
+from azure.mgmt.compute import ComputeManagementClient
+
+
+VM_REFERENCE = {
+    'linux': {
+        'publisher': 'Canonical',
+        'offer': 'UbuntuServer',
+        'sku': '16.04.0-LTS',
+        'version': 'latest'
+    },
+    'windows': {
+        'publisher': 'MicrosoftWindowsServerEssentials',
+        'offer': 'WindowsServerEssentials',
+        'sku': 'WindowsServerEssentials',
+        'version': 'latest'
+    }
+}
+
+
+def make_compute_client(credentials):
+    return ComputeManagementClient(
+        credentials.get_service_principal(),
+        credentials.subscription_id
+    )
 
 
 def create_resource_group(resource_client, name, location):
@@ -105,9 +129,9 @@ def create_nic(resource_group_name,
 def create_vm(compute_client,
               resource_group_name,
               vm_name,
-              vm_parameters,
               tags,
-              location):
+              location,
+              vm_parameters):
     result = compute_client.virtual_machines.create_or_update(resource_group_name,
                                                               vm_name,
                                                               vm_parameters)
