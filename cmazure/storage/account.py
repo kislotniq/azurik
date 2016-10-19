@@ -6,12 +6,9 @@ from azure.mgmt.storage.models import (
 )
 
 
-def get_account(storage_client, resource_group, name):
-    try:
-        return storage_client.storage_accounts.get_properties(resource_group.name,
-                                                              name)
-    except:
-        return None
+def get_account(storage_client, resource_group_name, name):
+    return storage_client.storage_accounts.get_properties(resource_group_name,
+                                                          name)
 
 
 def check_name_availability(storage_client, name):
@@ -22,32 +19,33 @@ def check_name_availability(storage_client, name):
     return True
 
 
-def create_account(storage_client, resource_group, name, region_name):
+def create_account(storage_client, resource_group_name, name):
     future = storage_client.storage_accounts.create(
-        resource_group.name,
+        resource_group_name,
         name,
         StorageAccountCreateParameters(
             sku=Sku(SkuName.standard_ragrs),
             kind=Kind.storage,
-            location=region_name
+            location=resource_group_name.location
         )
     )
     future.result()
-    return get_account(storage_client, resource_group, name)
+    return get_account(storage_client, resource_group_name, name)
 
 
-def delete_account(storage_client, resource_group, name):
-    storage_client.storage_accounts.delete(resource_group.name, name)
+def delete_account(storage_client, resource_group_name, name):
+    storage_client.storage_accounts.delete(resource_group_name, name)
 
 
-def list_accounts(storage_client, resource_group):
-    return storage_client.storage_accounts.list_by_resource_group(resource_group.name)
+def list_accounts(storage_client, resource_group_name):
+    return storage_client.storage_accounts.list_by_resource_group_name(resource_group_name)
 
 
-def use_account(storage_client, resource_group, name):
-    account = get_account(storage_client, resource_group, name)
-    if not account and check_name_availability(storage_client, name):
-        account = create_account(storage_client,
-                                 resource_group,
-                                 name,
-                                 resource_group.location)
+def use_account(storage_client, resource_group_name, name):
+    try:
+        return get_account(storage_client, resource_group_name, name)
+    except:
+        if check_name_availability(storage_client, name):
+            return create_account(storage_client,
+                                  resource_group_name,
+                                  name)

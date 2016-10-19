@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from cmazure import common
 from cmazure.storage import account as storageaccount
 from cmazure.storage import common as storagecommon
+from cmazure.storage.client import StorageClient
 from cmazure.credentials import AzureCredentials
 
 
@@ -47,10 +48,6 @@ def main():
 
     create_resource_group_parser = subparsers.add_parser("create-rg", help="Create resource group")
     create_resource_group_parser.add_argument(
-        "rg_name",
-        help="Resource group name"
-    )
-    create_resource_group_parser.add_argument(
         "region",
         help="Target region"
     )
@@ -80,7 +77,7 @@ def main():
     def create_director(args):
         common.create_director(
             make_resource_client(args),
-            args.resource_group,
+            args.rg_name,
             args.vm_name
         )
     create_director_parser.set_defaults(func=create_director)
@@ -118,7 +115,7 @@ def main():
     def create_compute_node(args):
         common.create_vm(
             make_compute_client(args),
-            args.resource_group,
+            args.rg_name,
             args.vm_name,
             {
                 'who-rocks': 'python',
@@ -145,23 +142,23 @@ def main():
         help="Volume name"
     )
 
-    create_storage_account_parser = subparsers.add_parser("create-storage-account", help="Create Storage Account")
+    create_storage_account_parser = subparsers.add_parser(
+        "create-storage-account", help="Create Storage Account")
+    create_storage_account_parser.add_argument(
+        "resource_group", help="Target resource group")
     create_storage_account_parser.add_argument("name", help="Account name")
-    create_storage_account_parser.add_argument("--rg_name", help="Resource group name")
-    create_storage_account_parser.add_argument("--region", help="Target region")
 
     def create_storage_account(args):
         return storageaccount.create_account(storagecommon.make_storage_client(make_credentials(args)),
-                                             create_resource_group(args),
-                                             args.name,
-                                             args.region)
+                                             args.rg_name,
+                                             args.name)
 
     create_storage_account_parser.set_defaults(func=create_storage_account)
 
     def create_volume(args):
         common.create_volume(
             make_resource_client(args),
-            args.resource_group,
+            args.rg_name,
             args.name
         )
     create_volume_parser.set_defaults(func=create_compute_node)
@@ -209,6 +206,18 @@ def main():
             ip_config_name=args.ipconfig_name or args.nic_name + "ipconfig"
         )
     create_nic_parser.set_defaults(func=create_nic)
+
+    def upload(args):
+       storage_client = storagecommon.make_storage_client(make_credentials(args))
+       account = storageaccount.get_account(storage_client, args.rg_name, args.account_name)
+       return StorageClient(account).mkdir("/home/oleksandr")
+
+    upload_parser = subparsers.add_parser(
+        "upload", help="Upload file to storage account")
+    upload_parser.add_argument("account_name", help="Storage account name",
+                               default=os.environ.get("AZURE_STORAGE_ACCOUNT"))
+    upload_parser.add_argument("file", help="File to upload")
+    upload_parser.set_defaults(func=upload)
 
     args = parser.parse_args()
     args.func(args)

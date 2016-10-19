@@ -4,7 +4,7 @@ import uuid
 class StorageClient(object):
 
     def __init__(self, account):
-        self.service = account.account.create_file_service()
+        self.service = account.create_file_service()
 
     def _get_resource_reference(self, prefix):
         return '{}{}'.format(prefix, str(uuid.uuid4()).replace('-', ''))
