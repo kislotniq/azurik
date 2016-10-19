@@ -176,27 +176,8 @@ def create_nic(network_client,
                ip_config_name):
     """Create a Network Interface for a VM.
     """
-    async_vnet_creation = network_client.virtual_networks.create_or_update(
-        rg_name,
-        vnet_name,
-        {
-            'location': location,
-            'address_space': {
-                'address_prefixes': ['10.0.0.0/16']
-            }
-        }
-    )
-    async_vnet_creation.wait()
-
-    # Create Subnet
-    async_subnet_creation = network_client.subnets.create_or_update(
-        rg_name,
-        vnet_name,
-        subnet_name,
-        {'address_prefix': '10.0.0.0/24'}
-    )
-    subnet_info = async_subnet_creation.result()
-
+    vnet, subnet = next([(vnet, subnet) for vnet, subnet in networks(network_client, rg_name)
+                         if vnet.name == vnet_name and subnet.name == subnet.name])
     # Create NIC
     async_nic_creation = network_client.network_interfaces.create_or_update(
         rg_name,
@@ -206,7 +187,7 @@ def create_nic(network_client,
             'ip_configurations': [{
                 'name': ip_config_name,
                 'subnet': {
-                    'id': subnet_info.id
+                    'id': subnet.id
                 }
             }]
         }
