@@ -79,13 +79,12 @@ def create_vm_parameters(location,
         },
     }
 
-def create_nic(resource_group_name,
-               vnet_name,
-               subnet_name,
-               network_client,
-               nic_name,
-               location,
-               ip_config_name):
+
+def create_network(network_client,
+                   resource_group_name,
+                   location,
+                   vnet_name,
+                   subnet_name):
     """Create a Network Interface for a VM.
     """
     # Create VNet
@@ -108,23 +107,8 @@ def create_nic(resource_group_name,
         subnet_name,
         {'address_prefix': '10.0.0.0/24'}
     )
-    subnet_info = async_subnet_creation.result()
+    return async_subnet_creation.result()
 
-    # Create NIC
-    async_nic_creation = network_client.network_interfaces.create_or_update(
-        resource_group_name,
-        nic_name,
-        {
-            'location': location,
-            'ip_configurations': [{
-                'name': ip_config_name,
-                'subnet': {
-                    'id': subnet_info.id
-                }
-            }]
-        }
-    )
-    return async_nic_creation.result()
 
 def create_vm(compute_client,
               resource_group_name,
