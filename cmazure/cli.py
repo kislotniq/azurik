@@ -78,7 +78,7 @@ def main():
         )
     create_director_parser.set_defaults(func=create_director)
 
-    create_compute_node_parser = subparsers.add_parser("create-volume", help="Create Cloud Node")
+    create_compute_node_parser = subparsers.add_parser("launch-inst", help="Launch instance")
     create_compute_node_parser.add_argument(
         "resource-group",
         help="Target resource group"
@@ -100,7 +100,7 @@ def main():
         )
     create_compute_node_parser.set_defaults(func=create_compute_node)
 
-    create_volume_parser = subparsers.add_parser("create-volume", help="Create Cloud Node")
+    create_volume_parser = subparsers.add_parser("create-volume", help="Create volume")
     create_volume_parser.add_argument(
         "resource-group",
         help="Target resource group"
@@ -118,7 +118,7 @@ def main():
         )
     create_volume_parser.set_defaults(func=create_compute_node)
 
-    list_resource_groups_parser = subparsers.add_parser("create-volume", help="Create Cloud Node")
+    list_resource_groups_parser = subparsers.add_parser("list-rg", help="List resource groups")
 
     def list_resource_groups(args):
         common.list_resource_groups(
