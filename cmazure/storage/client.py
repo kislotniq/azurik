@@ -1,4 +1,5 @@
 import os
+import logging
 
 
 class StorageClient(object):
@@ -15,6 +16,7 @@ class StorageClient(object):
     def mkdir(self, share_name, path):
         self.create_share(share_name)
         self.create_directory(share_name, path)
+        logging.info("Created directory %s on share %s" % (path, share_name))
 
     def mkdirp(self, share_name, path):
         dirs = list(os.path.split(path))

@@ -5,10 +5,14 @@ from azure.mgmt.storage.models import (
     Kind
 )
 
+import logging
+
 
 def get_account(storage_client, resource_group_name, name):
-    return storage_client.storage_accounts.get_properties(resource_group_name,
-                                                          name)
+    account = storage_client.storage_accounts.get_properties(resource_group_name,
+                                                             name)
+    logging.info("Got storage account: %s" % account.name)
+    return account
 
 
 def check_name_availability(storage_client, name):
