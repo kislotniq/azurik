@@ -1,6 +1,8 @@
 import os
 from argparse import ArgumentParser
 from cmazure import common
+from cmazure.storage import account as storageaccount
+from cmazure.storage import common as storagecommon
 from cmazure.credentials import AzureCredentials
 
 
@@ -49,7 +51,7 @@ def main():
     )
 
     def create_resource_group(args):
-        common.create_resource_group(
+        return common.create_resource_group(
             make_resource_client(args),
             args.rg_name,
             args.region,
@@ -109,6 +111,19 @@ def main():
         "name",
         help="Volume name"
     )
+
+    create_storage_account_parser = subparsers.add_parser("create-storage-account", help="Create Storage Account")
+    create_storage_account_parser.add_argument("name", help="Account name")
+    create_storage_account_parser.add_argument("--rg_name", help="Resource group name")
+    create_storage_account_parser.add_argument("--region", help="Target region")
+
+    def create_storage_account(args):
+        return storageaccount.create_account(storagecommon.make_storage_client(make_credentials(args)),
+                                             create_resource_group(args),
+                                             args.name,
+                                             args.region)
+
+    create_storage_account_parser.set_defaults(func=create_storage_account)
 
     def create_volume(args):
         common.create_volume(
