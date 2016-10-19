@@ -176,8 +176,13 @@ def create_nic(network_client,
                ip_config_name):
     """Create a Network Interface for a VM.
     """
-    vnet, subnet = next((vnet, subnet) for vnet, subnet in networks(network_client, rg_name)
-                        if vnet.name == vnet_name and subnet.name == subnet.name)
+    vnet, subnet = next(((vnet, subnet) for vnet, subnet in networks(network_client, rg_name)
+                         if vnet.name == vnet_name and subnet.name == subnet.name),
+                        (None, None))
+    if vnet is None or subnet is None:
+        raise Exception("Could not find a subnet %s in VNet %s by location %s:",
+                        subnet_name, vnet_name, location)
+
     # Create NIC
     async_nic_creation = network_client.network_interfaces.create_or_update(
         rg_name,
