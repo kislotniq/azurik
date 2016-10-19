@@ -21,6 +21,8 @@ def main():
     parser.add_argument("--subscription-id",
                         help="Azure subscription ID. Default: env AZURE_SUBSCRIPTION_ID",
                         default=os.environ.get("AZURE_SUBSCRIPTION_ID"))
+    parser.add_argument("-g", "--rg-name",
+                        help="Resource group name")
 
     def make_credentials(args):
         return AzureCredentials(
@@ -177,10 +179,6 @@ def main():
 
     create_nic_parser = subparsers.add_parser("create-nic", help="Create NIC")
     create_nic_parser.add_argument(
-        "resource_group",
-        help="Target resource group"
-    )
-    create_nic_parser.add_argument(
         "region",
         help="Region"
     )
@@ -209,7 +207,7 @@ def main():
         common.create_nic(
             network_client=make_network_client(args),
             location=args.region,
-            resource_group_name=args.resource_group,
+            resource_group_name=args.rg_name,
             nic_name=args.nic_name,
             vnet_name=args.vnet_name or args.nic_name + "vnet",
             subnet_name=args.subnet_name or args.nic_name + "subnet",
