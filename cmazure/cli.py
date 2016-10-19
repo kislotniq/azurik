@@ -35,7 +35,7 @@ def main():
 
     def list_regions(args):
         for region in common.regions(make_resource_client(args)):
-            print("{0.name}".format(region))
+            print("{key}".format(**region))
     list_regions_parser.set_defaults(func=list_regions)
 
     create_resource_group_parser = subparsers.add_parser("create-rg", help="Create resource group")

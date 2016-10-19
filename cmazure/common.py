@@ -1,4 +1,7 @@
+import re
+
 from azure.mgmt.resource import ResourceManagementClient
+from msrestazure.azure_exceptions import CloudError
 
 
 def create_resource_group(resource_client, name, location):
@@ -129,5 +132,11 @@ def make_resource_client(credentials):
 
 
 def regions(resource_client):
-    import pdb
-    pdb.set_trace()
+    try:
+        create_resource_group(resource_client, "wefewf", "wefewf")
+    except CloudError as excp:
+        message = str(excp)
+        return (
+            {"key": key} for key in
+            re.search("List of available regions is '([^']+)'", message).group(1).split(",")
+        )
