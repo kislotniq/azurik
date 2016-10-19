@@ -161,10 +161,6 @@ def main():
 
     create_net_parser = subparsers.add_parser("create-net", help="Create subnet and VNet")
     create_net_parser.add_argument(
-        "region",
-        help="Region"
-    )
-    create_net_parser.add_argument(
         "prefix",
         help="Name prefix"
     )
