@@ -40,7 +40,7 @@ def main():
 
     create_resource_group_parser = subparsers.add_parser("create-rg", help="Create resource group")
     create_resource_group_parser.add_argument(
-        "rg-name",
+        "rg_name",
         help="Resource group name"
     )
     create_resource_group_parser.add_argument(

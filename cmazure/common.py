@@ -2,11 +2,10 @@ from azure.mgmt.resource import ResourceManagementClient
 
 
 def create_resource_group(resource_client, name, location):
-    result = resource_client.resource_groups.create_or_update(name,
-                                                              {
-                                                                  'location' : location
-                                                              })
-    return result.wait()
+    return resource_client.resource_groups.create_or_update(name,
+                                                            {
+                                                                'location' : location
+                                                            })
 
 def create_vm_parameters(location,
                          vm_name,
