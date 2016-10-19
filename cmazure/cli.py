@@ -146,10 +146,12 @@ def main():
         return common.make_compute_client(make_credentials(args))
 
     def create_compute_node(args):
+        resource_client = make_resource_client(args)
+        common.create_resource_group(resource_client, args.rg_name, args.location)
         storage_acc = storageaccount.use_account(
             storagecommon.make_storage_client(make_credentials(args)),
             args.rg_name,
-            args.name,
+            args.storage_acc,
             args.location)
 
         common.create_vm(
