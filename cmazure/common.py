@@ -172,7 +172,8 @@ def create_nic(network_client,
                location,
                vnet_name,
                subnet_name,
-               nic_name):
+               nic_name,
+               ip_config_name):
     """Create a Network Interface for a VM.
     """
     async_vnet_creation = network_client.virtual_networks.create_or_update(
@@ -203,7 +204,7 @@ def create_nic(network_client,
         {
             'location': location,
             'ip_configurations': [{
-                'name': 'private-ip-config',
+                'name': ip_config_name,
                 'subnet': {
                     'id': subnet_info.id
                 }

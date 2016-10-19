@@ -184,7 +184,8 @@ def main():
                     args.location,
                     args.vnet,
                     args.subnet,
-                    "hardcoded-nic-name"
+                    args.vm_name + "nic",
+                    args.vm_name + "ipconfig"
                 ).id
             )
         )
