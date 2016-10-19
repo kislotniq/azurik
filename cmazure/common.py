@@ -1,6 +1,7 @@
 import re
 
 from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.network import NetworkManagementClient
 from msrestazure.azure_exceptions import CloudError
 
 
@@ -126,6 +127,13 @@ def create_vm(compute_client,
 
 def make_resource_client(credentials):
     return ResourceManagementClient(
+        credentials.get_service_principal(),
+        credentials.subscription_id
+    )
+
+
+def make_network_client(credentials):
+    return NetworkManagementClient(
         credentials.get_service_principal(),
         credentials.subscription_id
     )

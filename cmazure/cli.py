@@ -33,6 +33,9 @@ def main():
     def make_resource_client(args):
         return common.make_resource_client(make_credentials(args))
 
+    def make_network_client(args):
+        return common.make_network_client(make_credentials(args))
+
     list_regions_parser = subparsers.add_parser("list-regions", help="List azure regions")
 
     def list_regions(args):
@@ -140,6 +143,50 @@ def main():
             make_resource_client(args),
         )
     list_resource_groups_parser.set_defaults(func=list_resource_groups)
+
+    create_resource_group_parser.set_defaults(func=create_resource_group)
+
+    create_nic_parser = subparsers.add_parser("create-nic", help="Create NIC")
+    create_nic_parser.add_argument(
+        "resource_group",
+        help="Target resource group"
+    )
+    create_nic_parser.add_argument(
+        "region",
+        help="Region"
+    )
+    create_nic_parser.add_argument(
+        "nic_name",
+        help="NIC name"
+    )
+    create_nic_parser.add_argument(
+        "--vnet-name",
+        help="VNet name. Default nicnamevnet"
+    )
+    create_nic_parser.add_argument(
+        "--subnet-name",
+        help="Subnet name. Default nicnamesubnet"
+    )
+    create_nic_parser.add_argument(
+        "--ipconfig-name",
+        help="IP Config name. Default nicnameipconfig"
+    )
+    create_nic_parser.add_argument(
+        "--flavor",
+        help="Director's flavor"
+    )
+
+    def create_nic(args):
+        common.create_nic(
+            network_client=make_network_client(args),
+            location=args.region,
+            resource_group_name=args.resource_group,
+            nic_name=args.nic_name,
+            vnet_name=args.vnet_name or args.nic_name + "vnet",
+            subnet_name=args.subnet_name or args.nic_name + "subnet",
+            ip_config_name=args.ipconfig_name or args.nic_name + "ipconfig"
+        )
+    create_nic_parser.set_defaults(func=create_nic)
 
     args = parser.parse_args()
     args.func(args)
