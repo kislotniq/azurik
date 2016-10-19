@@ -10,7 +10,7 @@ from cmazure.credentials import AzureCredentials
 import logging
 
 root = logging.getLogger()
-root.setLevel(logging.DEBUG)
+root.setLevel(logging.INFO)
 ch = logging.StreamHandler(sys.stdout)
 ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(message)s')
