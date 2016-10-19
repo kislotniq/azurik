@@ -62,10 +62,6 @@ def main():
 
     create_director_parser = subparsers.add_parser("create-director", help="Create Cloud Director")
     create_director_parser.add_argument(
-        "resource-group",
-        help="Target resource group"
-    )
-    create_director_parser.add_argument(
         "vm-name",
         help="Director name"
     )
@@ -134,18 +130,12 @@ def main():
 
     create_volume_parser = subparsers.add_parser("create-volume", help="Create volume")
     create_volume_parser.add_argument(
-        "resource-group",
-        help="Target resource group"
-    )
-    create_volume_parser.add_argument(
         "name",
         help="Volume name"
     )
 
     create_storage_account_parser = subparsers.add_parser(
         "create-storage-account", help="Create Storage Account")
-    create_storage_account_parser.add_argument(
-        "resource_group", help="Target resource group")
     create_storage_account_parser.add_argument("name", help="Account name")
 
     def create_storage_account(args):
