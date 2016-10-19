@@ -7,5 +7,9 @@ setup(
     version='0.1',
     description='Bright CoD image Azure integration',
     packages=['cmazure'],
-    install_requires=["azure"]
+    install_requires=["azure"],
+    entry_points={
+        "console_scripts":
+        "cmazure=cmazure.cli:main"
+    }
 )
