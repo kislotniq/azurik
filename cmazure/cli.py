@@ -160,8 +160,8 @@ def main():
                 args.vm_name,
                 "matilda",
                 "l8Uccc",
-                args.disk_name,
                 args.storage_acc,
+                args.disk_name,
                 common.create_nic(
                     make_network_client(args),
                     args.rg_name,
