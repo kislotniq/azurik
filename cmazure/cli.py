@@ -186,8 +186,8 @@ def main():
     list_net_parser = subparsers.add_parser("list-net", help="List networks")
 
     def list_net(args):
-        for net in common.networks(make_network_client(args), args.rg_name):
-            print("{vnet}\t{subnet}".format(**net))
+        for vnet, subnet in common.networks(make_network_client(args), args.rg_name):
+            print("{0.name}\t{1.name}".format(vnet, subnet))
     list_net_parser.set_defaults(func=list_net)
 
     def upload(args):

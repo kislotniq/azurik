@@ -113,8 +113,7 @@ def create_network(network_client,
 def networks(network_client, rg_name):
     for vnet in network_client.virtual_networks.list(rg_name):
         for subnet in network_client.subnets.list(rg_name, vnet.name):
-            yield {"vnet": vnet.name,
-                   "subnet": subnet.name}
+            yield (vnet, subnet)
 
 
 def create_vm(compute_client,
