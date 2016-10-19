@@ -24,6 +24,9 @@ def main():
                         default=os.environ.get("AZURE_SUBSCRIPTION_ID"))
     parser.add_argument("-g", "--rg-name",
                         help="Resource group name")
+    parser.add_argument("-r", "--region",
+                        help="Target region",
+                        default="westus")
 
     def make_credentials(args):
         return AzureCredentials(
@@ -47,10 +50,6 @@ def main():
     list_regions_parser.set_defaults(func=list_regions)
 
     create_resource_group_parser = subparsers.add_parser("create-rg", help="Create resource group")
-    create_resource_group_parser.add_argument(
-        "region",
-        help="Target region"
-    )
 
     def create_resource_group(args):
         return common.create_resource_group(
@@ -141,7 +140,8 @@ def main():
     def create_storage_account(args):
         return storageaccount.create_account(storagecommon.make_storage_client(make_credentials(args)),
                                              args.rg_name,
-                                             args.name)
+                                             args.name,
+                                             args.region)
 
     create_storage_account_parser.set_defaults(func=create_storage_account)
 

@@ -19,14 +19,14 @@ def check_name_availability(storage_client, name):
     return True
 
 
-def create_account(storage_client, resource_group_name, name):
+def create_account(storage_client, resource_group_name, name, location):
     future = storage_client.storage_accounts.create(
         resource_group_name,
         name,
         StorageAccountCreateParameters(
             sku=Sku(SkuName.standard_ragrs),
             kind=Kind.storage,
-            location=resource_group_name.location
+            location=location
         )
     )
     future.result()
@@ -41,11 +41,11 @@ def list_accounts(storage_client, resource_group_name):
     return storage_client.storage_accounts.list_by_resource_group_name(resource_group_name)
 
 
-def use_account(storage_client, resource_group_name, name):
+def use_account(storage_client, resource_group_name, name, location):
     try:
         return get_account(storage_client, resource_group_name, name)
     except:
         if check_name_availability(storage_client, name):
             return create_account(storage_client,
                                   resource_group_name,
-                                  name)
+                                  name, location)
