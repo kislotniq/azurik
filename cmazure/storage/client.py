@@ -1,4 +1,4 @@
-import uuid
+import os
 
 
 class StorageClient(object):
@@ -6,21 +6,28 @@ class StorageClient(object):
     def __init__(self, account):
         self.service = account.create_file_service()
 
-    def _get_resource_reference(self, prefix):
-        return '{}{}'.format(prefix, str(uuid.uuid4()).replace('-', ''))
+    def create_share(self, name):
+        self.service.create_share(name)
 
-    def _get_file_reference(self, prefix='file'):
-        return self._get_resource_reference(prefix)
+    def create_directory(self, share_name, name):
+        self.service.create_directory(share_name, name)
 
-    def _create_share(self, prefix='share'):
-        share_name = self._get_resource_reference(prefix)
-        self.service.create_share(share_name)
-        return share_name
+    def mkdir(self, share_name, path):
+        self.create_share(share_name)
+        self.create_directory(share_name, path)
 
-    def _create_directory(self, share_name, prefix='dir'):
-        dir_name = self._get_resource_reference(prefix)
-        self.service.create_directory(share_name, dir_name)
+    def mkdirp(self, share_name, path):
+        dirs = list(os.path.split(path))
 
-    def mkdir(self, path, prefix='dir'):
-        share_name = self._create_share()
-        self._create_directory(share_name)
+        for i in range(0, len(dirs)):
+            d = '/'.join(dirs[:i + 1])
+            self.mkdir(share_name, d)
+
+    def upload(self, share_name, path):
+        path = os.path.abspath(path)
+        dirname = os.path.dirname(path)[1:]
+        basename = os.path.basename(path)
+
+        self.create_share(share_name)
+        self.mkdirp(share_name, dirname)
+        self.service.create_file_from_path(share_name, dirname, basename, path)

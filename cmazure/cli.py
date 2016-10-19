@@ -200,14 +200,20 @@ def main():
     list_net_parser.set_defaults(func=list_net)
 
     def upload(args):
-       storage_client = storagecommon.make_storage_client(make_credentials(args))
-       account = storageaccount.get_account(storage_client, args.rg_name, args.account_name)
-       return StorageClient(account).mkdir("/home/oleksandr")
+       account = storagecommon.make_cloud_storage_account(args.account_name,
+                                                          args.account_key,
+                                                          args.sas_token)
+       return StorageClient(account).upload(args.share_name, args.file)
 
     upload_parser = subparsers.add_parser(
         "upload", help="Upload file to storage account")
-    upload_parser.add_argument("account_name", help="Storage account name",
-                               default=os.environ.get("AZURE_STORAGE_ACCOUNT"))
+    upload_parser.add_argument("-a", "--account-name", help="Storage account name",
+                               default=os.environ.get("AZURE_STORAGE_ACCOUNT_NAME"))
+    upload_parser.add_argument("-k", "--account-key", help="Storage account key",
+                               default=os.environ.get("AZURE_STORAGE_ACCOUNT_KEY"))
+    upload_parser.add_argument("-t", "--sas-token", help="SAS token",
+                               default=os.environ.get("AZURE_STORAGE_SAS_TOKEN"))
+    upload_parser.add_argument("-s", "--share-name", help="Share name")
     upload_parser.add_argument("file", help="File to upload")
     upload_parser.set_defaults(func=upload)
 
