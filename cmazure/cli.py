@@ -163,7 +163,7 @@ def main():
 
     create_resource_group_parser.set_defaults(func=create_resource_group)
 
-    create_net_parser = subparsers.add_parser("create-net", help="Create NIC")
+    create_net_parser = subparsers.add_parser("create-net", help="Create subnet and VNet")
     create_net_parser.add_argument(
         "region",
         help="Region"
