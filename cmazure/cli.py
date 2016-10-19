@@ -187,6 +187,13 @@ def main():
         )
     create_net_parser.set_defaults(func=create_net)
 
+    list_net_parser = subparsers.add_parser("list-net", help="List networks")
+
+    def list_net(args):
+        for net in common.networks(make_network_client(args), args.rg_name):
+            print("{vnet}\t{subnet}".format(**net))
+    list_net_parser.set_defaults(func=list_net)
+
     def upload(args):
        storage_client = storagecommon.make_storage_client(make_credentials(args))
        account = storageaccount.get_account(storage_client, args.rg_name, args.account_name)
