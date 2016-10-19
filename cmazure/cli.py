@@ -1,4 +1,5 @@
 import os
+import sys
 from argparse import ArgumentParser
 from cmazure import common
 from cmazure.storage import account as storageaccount
@@ -7,6 +8,14 @@ from cmazure.storage.client import StorageClient
 from cmazure.credentials import AzureCredentials
 
 import logging
+
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(message)s')
+ch.setFormatter(formatter)
+root.addHandler(ch)
 
 
 def make_credentials(args):
@@ -30,7 +39,6 @@ def do_magic(args):
     def input_prefix(text, default):
         default = "%s%s" % (args.prefix, default)
         return input("%s [%s]: " % (text, default)) or default
-    logging.basicConfig(level=logging.INFO)
     resource_client = make_resource_client(args)
     network_client = make_network_client(args)
     rg_name = args.rg_name or input_prefix("Resource group name: ", "rg")
