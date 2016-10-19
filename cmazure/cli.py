@@ -83,10 +83,6 @@ def main():
         help="Node location"
     )
     create_vm_parser.add_argument(
-        "resource_group",
-        help="Target resource group"
-    )
-    create_vm_parser.add_argument(
         "vm_name",
         help="Node name"
     )
@@ -163,39 +159,33 @@ def main():
 
     create_resource_group_parser.set_defaults(func=create_resource_group)
 
-    create_nic_parser = subparsers.add_parser("create-nic", help="Create NIC")
-    create_nic_parser.add_argument(
+    create_net_parser = subparsers.add_parser("create-net", help="Create subnet and VNet")
+    create_net_parser.add_argument(
         "region",
         help="Region"
     )
-    create_nic_parser.add_argument(
-        "nic_name",
-        help="NIC name"
+    create_net_parser.add_argument(
+        "prefix",
+        help="Name prefix"
     )
-    create_nic_parser.add_argument(
+    create_net_parser.add_argument(
         "--vnet-name",
-        help="VNet name. Default nicnamevnet"
+        help="VNet name. Default prefixvnet"
     )
-    create_nic_parser.add_argument(
+    create_net_parser.add_argument(
         "--subnet-name",
-        help="Subnet name. Default nicnamesubnet"
-    )
-    create_nic_parser.add_argument(
-        "--ipconfig-name",
-        help="IP Config name. Default nicnameipconfig"
+        help="Subnet name. Default prefixsubnet"
     )
 
-    def create_nic(args):
-        common.create_nic(
+    def create_net(args):
+        common.create_network(
             network_client=make_network_client(args),
             location=args.region,
             resource_group_name=args.rg_name,
-            nic_name=args.nic_name,
-            vnet_name=args.vnet_name or args.nic_name + "vnet",
-            subnet_name=args.subnet_name or args.nic_name + "subnet",
-            ip_config_name=args.ipconfig_name or args.nic_name + "ipconfig"
+            vnet_name=args.vnet_name or args.prefix + "vnet",
+            subnet_name=args.subnet_name or args.prefix + "subnet",
         )
-    create_nic_parser.set_defaults(func=create_nic)
+    create_net_parser.set_defaults(func=create_net)
 
     def upload(args):
        storage_client = storagecommon.make_storage_client(make_credentials(args))
