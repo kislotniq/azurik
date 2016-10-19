@@ -114,5 +114,13 @@ def main():
         )
     create_volume_parser.set_defaults(func=create_compute_node)
 
+    list_resource_groups_parser = subparsers.add_parser("create-volume", help="Create Cloud Node")
+
+    def list_resource_groups(args):
+        common.list_resource_groups(
+            make_resource_client(args),
+        )
+    list_resource_groups_parser.set_defaults(func=list_resource_groups)
+
     args = parser.parse_args()
     args.func(args)
