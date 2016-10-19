@@ -91,23 +91,23 @@ def main():
         help="Node location"
     )
     create_vm_parser.add_argument(
-        "resource-group",
+        "resource_group",
         help="Target resource group"
     )
     create_vm_parser.add_argument(
-        "vm-name",
+        "vm_name",
         help="Node name"
     )
     create_vm_parser.add_argument(
-        "disk-name",
+        "disk_name",
         help="Disk name"
     )
     create_vm_parser.add_argument(
-        "nic-id",
+        "nic_id",
         help="NIC id"
     )
     create_vm_parser.add_argument(
-        "storage-acc",
+        "storage_acc",
         help="Storage account name"
     )
 
@@ -127,11 +127,10 @@ def main():
             args.location,
             common.create_vm_parameters(args.location,
                                         args.vm_name,
-                                        "root",
-                                        "root",
-                                        args.os_disk_name,
+                                        "matilda",
+                                        "l8Uccc",
+                                        args.disk_name,
                                         args.nic_id,
-                                        'linux',
                                         args.storage_acc)
         )
     create_vm_parser.set_defaults(func=create_compute_node)

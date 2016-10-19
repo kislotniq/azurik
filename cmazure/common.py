@@ -41,8 +41,8 @@ def create_vm_parameters(location,
                          admin_password,
                          os_disk_name,
                          nic_id,
-                         vm_reference,
                          storage_account_name):
+    vm_reference = VM_REFERENCE['linux']
     """Create the VM parameters structure.
     """
     return {
