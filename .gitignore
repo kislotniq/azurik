@@ -1,2 +1,3 @@
 .cache
 cm_azure.egg-info
+__pycache__
