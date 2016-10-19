@@ -7,13 +7,13 @@ from cmazure.credentials import AzureCredentials
 def main():
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(help="SUBPARSERS_HELP")
-    parser.add_argument("--client-id",
+    parser.add_argument("--client",
                         help="Azure client ID. Default: env AZURE_CLIENT_ID",
                         default=os.environ.get("AZURE_CLIENT_ID"))
-    parser.add_argument("--client-secret",
+    parser.add_argument("--secret",
                         help="Azure client secret. Default: env AZURE_CLIENT_SECRET",
-                        default=os.environ.get("AZURE_CLIENT_ID"))
-    parser.add_argument("--tenant-id",
+                        default=os.environ.get("AZURE_CLIENT_SECRET"))
+    parser.add_argument("--tenant",
                         help="Azure tenant ID. Default: env AZURE_TENANT_ID",
                         default=os.environ.get("AZURE_TENANT_ID"))
     parser.add_argument("--subscription-id",
@@ -22,9 +22,9 @@ def main():
 
     def make_credentials(args):
         return AzureCredentials(
-            client_id=args.client_id,
-            client_secret=args.client_secret,
-            tenant_id=args.tenant_id,
+            client_id=args.client,
+            secret=args.secret,
+            tenant=args.tenant,
             subscription_id=args.subscription_id
         )
 
@@ -34,7 +34,7 @@ def main():
     list_regions_parser = subparsers.add_parser("list-regions", help="List azure regions")
 
     def list_regions(args):
-        for region in common.list_regions(make_resource_client(args)):
+        for region in common.regions(make_resource_client(args)):
             print("{0.name}".format(region))
     list_regions_parser.set_defaults(func=list_regions)
 
@@ -49,7 +49,11 @@ def main():
     )
 
     def create_resource_group(args):
-        common.create_resource_group(make_resource_client(args))
+        common.create_resource_group(
+            make_resource_client(args),
+            args.rg_name,
+            args.region,
+        )
     create_resource_group_parser.set_defaults(func=create_resource_group)
 
     create_director_parser = subparsers.add_parser("create-director", help="Create Cloud Director")

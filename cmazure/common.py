@@ -1,3 +1,6 @@
+from azure.mgmt.resource import ResourceManagementClient
+
+
 def create_resource_group(resource_client, name, location):
     result = resource_client.resource_groups.create_or_update(name,
                                                               {
@@ -117,3 +120,15 @@ def create_vm(compute_client,
                                                               })
 
     vm_tag.wait()
+
+
+def make_resource_client(credentials):
+    return ResourceManagementClient(
+        credentials.get_service_principal(),
+        credentials.subscription_id
+    )
+
+
+def regions(resource_client):
+    import pdb
+    pdb.set_trace()
