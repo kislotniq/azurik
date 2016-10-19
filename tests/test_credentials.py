@@ -7,5 +7,4 @@ def test_login():
     creds = AzureCredentials.make_from_environment()
     resource_manager = ResourceManagementClient(creds.get_service_principal(),
                                                 creds.subscription_id)
-    for gr in resource_manager.resource_groups.list():
-        print(gr)
+    list(resource_manager.resource_groups.list())
