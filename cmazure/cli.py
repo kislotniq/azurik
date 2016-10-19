@@ -6,6 +6,53 @@ from cmazure.storage import common as storagecommon
 from cmazure.storage.client import StorageClient
 from cmazure.credentials import AzureCredentials
 
+import logging
+
+
+def make_credentials(args):
+    return AzureCredentials(
+        client_id=args.client,
+        secret=args.secret,
+        tenant=args.tenant,
+        subscription_id=args.subscription_id
+    )
+
+
+def make_resource_client(args):
+    return common.make_resource_client(make_credentials(args))
+
+
+def make_network_client(args):
+    return common.make_network_client(make_credentials(args))
+
+
+def do_magic(args):
+    def input_prefix(text, default):
+        default = "%s%s" % (args.prefix, default)
+        return input("%s [%s]: " % (text, default)) or default
+    logging.basicConfig(level=logging.INFO)
+    resource_client = make_resource_client(args)
+    network_client = make_network_client(args)
+    rg_name = args.rg_name or input_prefix("Resource group name: ", "rg")
+    location = args.location or input("Location: ")
+    common.create_resource_group(resource_client,
+                                 rg_name,
+                                 location)
+    completed = False
+    try:
+        subnet_name = input_prefix("Subnet name", "subnet")
+        vnet_name = input_prefix("VNet name", "vnet")
+        logging.info("Creating VNet %s and subnet %s...", vnet_name, subnet_name)
+        common.create_network(network_client,
+                              rg_name,
+                              location,
+                              vnet_name,
+                              subnet_name)
+        completed = True
+    finally:
+        if not completed:
+            common.remove_resource_group(resource_client, rg_name)
+
 
 def main():
     parser = ArgumentParser()
@@ -27,20 +74,6 @@ def main():
     parser.add_argument("-l", "--location",
                         help="Target location",
                         default="westus")
-
-    def make_credentials(args):
-        return AzureCredentials(
-            client_id=args.client,
-            secret=args.secret,
-            tenant=args.tenant,
-            subscription_id=args.subscription_id
-        )
-
-    def make_resource_client(args):
-        return common.make_resource_client(make_credentials(args))
-
-    def make_network_client(args):
-        return common.make_network_client(make_credentials(args))
 
     list_locations_parser = subparsers.add_parser("list-locations", help="List azure locations")
 
@@ -174,6 +207,13 @@ def main():
             make_resource_client(args),
         )
     list_resource_groups_parser.set_defaults(func=list_resource_groups)
+
+    do_magic_parser = subparsers.add_parser("do-magic", help="ABRA KADABRA")
+    do_magic_parser.add_argument(
+        "prefix",
+        help="Name prefix"
+    )
+    do_magic_parser.set_defaults(func=do_magic)
 
     create_resource_group_parser.set_defaults(func=create_resource_group)
 
